@@ -1,0 +1,1 @@
+{"compilerOptions":{"target":"es2022","lib":["dom","esnext"],"strict":true,"module":"esnext","moduleResolution":"bundler","jsx":"preserve","noEmit":true,"incremental":true,"skipLibCheck":true,"plugins":[{"name":"next"}],"paths":{"@/*":["./*"]}},"include":["**/*.ts","**/*.tsx"],"exclude":["node_modules"]}

@@ -1,0 +1,12 @@
+create table companies(id uuid primary key default gen_random_uuid(),owner_id uuid references auth.users(id) on delete cascade,name text not null,industry text not null,website text,plan text default 'starter',stripe_customer_id text unique,stripe_subscription_id text,subscription_status text default 'inactive',current_period_end timestamptz,created_at timestamptz default now());
+create table squads(id uuid primary key default gen_random_uuid(),company_id uuid references companies(id) on delete cascade,vapi_squad_id text,vapi_phone_number_id text,phone_number text,status text default 'provisioning',compiled_json jsonb not null,created_at timestamptz default now());
+create table agents(id uuid primary key default gen_random_uuid(),squad_id uuid references squads(id) on delete cascade,vapi_assistant_id text,slug text not null,name text not null,department text not null,role text not null,system_prompt text not null,voice_id text,desk_index int default 0,avatar_color text);
+create table calls(id uuid primary key default gen_random_uuid(),company_id uuid references companies(id) on delete cascade,vapi_call_id text unique,caller_number text,current_agent_id text,last_snippet text,duration_seconds int,transcript jsonb,outcome text,recording_url text,revenue_cents int default 0,created_at timestamptz default now(),updated_at timestamptz default now());
+create table stripe_events(event_id text primary key,event_type text not null,processed_at timestamptz default now());
+alter table companies enable row level security;alter table squads enable row level security;alter table agents enable row level security;alter table calls enable row level security;
+create policy own_company on companies for all using(owner_id=auth.uid());
+create policy own_squads on squads for all using(company_id in(select id from companies where owner_id=auth.uid()));
+create policy own_agents on agents for all using(squad_id in(select s.id from squads s join companies c on c.id=s.company_id where c.owner_id=auth.uid()));
+create policy own_calls on calls for all using(company_id in(select id from companies where owner_id=auth.uid()));
+alter publication supabase_realtime add table calls;
+alter table calls replica identity full;
