@@ -1,16 +1,28 @@
-import {NextResponse,type NextRequest} from 'next/server';
-import {createServerClient,type CookieOptions} from '@supabase/ssr';
-type C={name:string;value:string;options:CookieOptions};
-export async function middleware(req:NextRequest){
-  const res=NextResponse.next({request:req});
-  const sb=createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,{
-    cookies:{
-      getAll:()=>req.cookies.getAll(),
-      setAll:(l:C[])=>{l.forEach(({name,value,options})=>res.cookies.set(name,value,options))}
-    }
-  });
-  const {data:{user}}=await sb.auth.getUser();
-  if(!user)return NextResponse.redirect(new URL('/login',req.url));
-  return res;
+{
+  "name": "nexus-workforce",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "@supabase/ssr": "^0.5.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "zustand": "^4.5.0",
+    "stripe": "^16.0.0",
+    "framer-motion": "^11.0.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "tailwindcss": "^3.4.0",
+    "postcss": "^8",
+    "autoprefixer": "^10"
+  }
 }
-export const config={matcher:['/office/:path*','/onboarding/:path*','/dashboard/:path*']};
