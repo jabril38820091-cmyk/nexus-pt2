@@ -9,13 +9,13 @@ export function AuthForm({mode}:{mode:'login'|'signup'}){
    const {data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:`${location.origin}/auth/callback`}});
    setBusy(false);
    if(error)return setMsg(error.message);
-   if(data.session)return router.push('/onboarding');
+   if(data.session)return router.push('/office');
    return setMsg('Check your email and click the confirmation link.');
   }
   const {error}=await sb.auth.signInWithPassword({email,password});
   setBusy(false);
   if(error)return setMsg(error.message);
-  router.push('/onboarding');router.refresh();
+  router.push('/office');router.refresh();
  }
  return(<main className="mx-auto mt-24 max-w-sm p-6">
   <h1 className="text-2xl font-semibold">{mode==='login'?'Log in':'Create your account'}</h1>

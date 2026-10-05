@@ -1,6 +1,7 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {createClient} from '@/lib/supabase/server';
 import {vapiChat} from '@/lib/vapi/chat';
+import {fireEvent} from '@/lib/events';
 export const maxDuration=60;
 export async function POST(req:NextRequest){
   try{
@@ -20,6 +21,7 @@ export async function POST(req:NextRequest){
       patch={status:'done',result:text};
     }catch(e){patch={status:'failed',result:e instanceof Error?e.message:String(e)}}
     const {data:done}=await sb.from('tasks').update({...patch,updated_at:new Date().toISOString()}).eq('id',task.id).select('*').single();
+    await fireEvent(company.id,'task.completed',{task:done});
     return NextResponse.json({task:done});
   }catch(e){return NextResponse.json({error:'task_failed',detail:e instanceof Error?e.message:String(e)},{status:500})}
 }

@@ -1,6 +1,7 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {timingSafeEqual} from 'crypto';
 import {supabaseAdmin} from '@/lib/supabase/admin';
+import {fireEvent} from '@/lib/events';
 type TC={id:string;name?:string;arguments?:unknown;function?:{name?:string;arguments?:unknown}};
 type Call={phoneNumberId?:string;assistantId?:string;id?:string};
 const same=(a:string,b:string)=>{const x=Buffer.from(a),y=Buffer.from(b);return x.length===y.length&&timingSafeEqual(x,y)};
@@ -40,7 +41,7 @@ async function run(tc:TC,companyId:string|null,callId:string|null):Promise<strin
     const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,'Content-Type':'application/json'},
       body:JSON.stringify({from:process.env.EMAIL_FROM??'Nexus <onboarding@resend.dev>',to:[to2],subject:sub,text,...(process.env.EMAIL_REPLY_TO?{reply_to:process.env.EMAIL_REPLY_TO}:{})})});
     if(!r.ok){const j=await r.json().catch(()=>({}));const msg=one(String((j as {message?:string}).message??r.status));await log('failed',msg);return`The email could not be sent: ${msg}`}
-    await log('sent');return`Email sent to ${to2}.`;
+    await log('sent');await fireEvent(companyId,'email.sent',{to:to2,subject:sub,call_id:callId});return`Email sent to ${to2}.`;
   }catch(e){const msg=e instanceof Error?e.message:String(e);await log('failed',msg);return'The email could not be sent right now.'}
 }
 export async function POST(req:NextRequest){

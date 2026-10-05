@@ -5,7 +5,7 @@ import {createClient} from '@/lib/supabase/client';
 import {DEPARTMENTS,type AgentRoster} from '@/lib/agents/roster';
 type Msg={who:'you'|'agent';text:string};
 const box='w-full rounded border border-slate-600 bg-slate-950 p-2 text-sm';
-export function AgentPanel({agent,onClose}:{agent:AgentRoster;onClose:()=>void}){
+export function AgentPanel({agent,onClose,locked=false}:{agent:AgentRoster;onClose:()=>void;locked?:boolean}){
   const [tab,setTab]=useState<'chat'|'voice'|'task'>('chat');
   const [assistantId,setAssistantId]=useState<string|null|undefined>(undefined);
   useEffect(()=>{createClient().from('agents').select('vapi_assistant_id').eq('slug',agent.id).limit(1).maybeSingle().then(({data})=>setAssistantId(data?.vapi_assistant_id??null))},[agent.id]);
@@ -16,13 +16,14 @@ export function AgentPanel({agent,onClose}:{agent:AgentRoster;onClose:()=>void})
         <p className="text-sm text-slate-400">{DEPARTMENTS[agent.department].label} · {agent.role}</p></div>
       <button onClick={onClose} aria-label="Close" className="rounded px-2 py-1 text-slate-400 hover:text-white">✕</button>
     </div>
-    <div className="flex gap-1 border-b border-slate-800 p-2">
+    {locked&&<p className="m-4 rounded border border-slate-600 bg-slate-800 p-3 text-sm text-slate-300">🔒 This agent isn't part of your current setup. Change your agents in <Link href="/settings" className="underline">Settings</Link>.</p>}
+    {!locked&&<div className="flex gap-1 border-b border-slate-800 p-2">
       {(['chat','voice','task'] as const).map(t=>(<button key={t} onClick={()=>setTab(t)} className={`rounded px-3 py-1.5 text-sm ${tab===t?'bg-slate-700 text-white':'text-slate-400'}`}>{t==='chat'?'Chat':t==='voice'?'Talk':'Give a task'}</button>))}
-    </div>
-    {assistantId===null&&<p className="m-4 rounded border border-amber-600/50 bg-amber-950/40 p-3 text-sm text-amber-300">This agent isn't linked to a Vapi assistant yet. Connect your squad on the onboarding page first.</p>}
-    {assistantId&&tab==='chat'&&<ChatTab slug={agent.id}/>}
-    {assistantId&&tab==='voice'&&<VoiceTab assistantId={assistantId}/>}
-    {assistantId&&tab==='task'&&<TaskTab slug={agent.id}/>}
+    </div>}
+    {!locked&&assistantId===null&&<p className="m-4 rounded border border-amber-600/50 bg-amber-950/40 p-3 text-sm text-amber-300">This agent isn't linked to a Vapi assistant yet. Connect your squad on the onboarding page first.</p>}
+    {!locked&&assistantId&&tab==='chat'&&<ChatTab slug={agent.id}/>}
+    {!locked&&assistantId&&tab==='voice'&&<VoiceTab assistantId={assistantId}/>}
+    {!locked&&assistantId&&tab==='task'&&<TaskTab slug={agent.id}/>}
   </aside>);
 }
 function ChatTab({slug}:{slug:string}){
