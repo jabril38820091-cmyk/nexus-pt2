@@ -5,7 +5,7 @@ import {createClient} from '@/lib/supabase/client';
 import {ConnectionsPanel} from '@/components/connections-panel';
 type Hook={id:string;url:string;events:string[];secret:string;last_status:string|null;last_at:string|null};
 type Key={id:string;name:string;key_prefix:string;last_used_at:string|null;created_at:string};
-const EVENTS=[['task.completed','A task finishes'],['email.sent','An agent sends an email'],['call.ended','A phone call ends']];
+const EVENTS=[['task.completed','A task finishes'],['followup.approved','You approve a follow-up'],['email.sent','An agent sends an email'],['call.ended','A phone call ends']];
 const CATALOG:[string,string,string][]=[
   ['Any tool with an API','Custom','Add it in Custom connections below, with an address and your key'],
   ['Zapier','Bridge','Connect thousands of apps using a Zapier webhook'],['Make','Bridge','Connect thousands of apps using a Make webhook'],['n8n','Bridge','Self-hosted or cloud automation, via webhooks'],

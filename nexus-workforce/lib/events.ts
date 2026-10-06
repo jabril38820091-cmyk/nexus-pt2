@@ -1,7 +1,7 @@
 import 'server-only';
 import {createHmac} from 'crypto';
 import {supabaseAdmin} from '@/lib/supabase/admin';
-export const EVENTS=['task.completed','email.sent','call.ended'] as const;
+export const EVENTS=['task.completed','email.sent','call.ended','followup.approved'] as const;
 export function isSafeUrl(u:string):boolean{
   try{
     const x=new URL(u);if(x.protocol!=='https:')return false;

@@ -9,13 +9,13 @@ export function AuthForm({mode}:{mode:'login'|'signup'}){
    const {data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:`${location.origin}/auth/callback`}});
    setBusy(false);
    if(error)return setMsg(error.message);
-   if(data.session)return router.push('/office');
+   if(data.session)return router.push('/hub');
    return setMsg('Check your email and click the confirmation link.');
   }
   const {error}=await sb.auth.signInWithPassword({email,password});
   setBusy(false);
   if(error)return setMsg(error.message);
-  router.push('/office');router.refresh();
+  router.push('/hub');router.refresh();
  }
  return(<main className="mx-auto mt-24 max-w-sm p-6">
   <h1 className="text-2xl font-semibold">{mode==='login'?'Log in':'Create your account'}</h1>
@@ -26,4 +26,5 @@ export function AuthForm({mode}:{mode:'login'|'signup'}){
    {msg&&<p role="alert" className="text-sm text-amber-400">{msg}</p>}
   </form>
   <p className="mt-4 text-sm text-slate-400">{mode==='login'?<>No account? <Link className="underline" href="/signup">Sign up</Link></>:<>Have an account? <Link className="underline" href="/login">Log in</Link></>}</p>
+ {mode==='login'&&<p className="mt-2 text-sm"><Link className="text-slate-400 underline" href="/forgot-password">Forgot password?</Link></p>}
  </main>);}

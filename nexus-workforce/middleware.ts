@@ -13,4 +13,4 @@ export async function middleware(req:NextRequest){
   if(!user)return NextResponse.redirect(new URL('/login',req.url));
   return res;
 }
-export const config={matcher:['/office/:path*','/onboarding/:path*','/dashboard/:path*','/tasks/:path*','/departments/:path*','/calls/:path*','/settings/:path*','/billing/:path*','/emails/:path*']};
+export const config={matcher:['/office/:path*','/onboarding/:path*','/dashboard/:path*','/tasks/:path*','/departments/:path*','/calls/:path*','/settings/:path*','/billing/:path*','/emails/:path*','/integrations/:path*','/admin/:path*','/hub/:path*']};

@@ -17,7 +17,7 @@ export default function Onboarding(){
     if(!user){router.push('/login');return}
     const {error}=await sb.from('companies').insert({owner_id:user.id,name,industry:industry.trim()||'Other',agent_mode:choice.mode,chosen_agent:choice.mode==='single'?choice.chosen:null});
     if(error){setMsg(error.message);setBusy(false);return}
-    router.push('/office');
+    router.push('/hub');
   }
   if(loading||company)return<main className="p-8 text-slate-400">Loading…</main>;
   return(<main className="mx-auto mt-12 max-w-md p-6">

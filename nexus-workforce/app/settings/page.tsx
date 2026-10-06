@@ -5,6 +5,7 @@ import {AgentChoice,type Choice} from '@/components/agent-choice';
 import {ConnectSquad} from '@/components/connect-squad';
 import {useCompany} from '@/lib/use-company';
 import {createClient} from '@/lib/supabase/client';
+import {ChangePassword} from '@/components/change-password';
 export default function Settings(){
   const {company}=useCompany();
   const [choice,setChoice]=useState<Choice>({mode:'full',chosen:'lead-qualifier'});
@@ -36,6 +37,7 @@ export default function Settings(){
         <button onClick={save} className="mt-3 rounded bg-emerald-600 px-4 py-2 text-sm font-medium">Save</button>
         {saved&&<p className="mt-2 text-sm text-slate-300">{saved}</p>}
       </section>
+      <section className={card}><h2 className="mb-3 font-medium">Account</h2><ChangePassword/></section>
       <section className={card}><h2 className="mb-1 font-medium">Advanced: connect your own Vapi squad</h2>
         <p className="mb-3 text-sm text-slate-400">Optional. Only needed if you already built a squad in Vapi and want it linked to this office.</p>
         {info===undefined&&<p className="text-sm text-slate-500">Loading…</p>}

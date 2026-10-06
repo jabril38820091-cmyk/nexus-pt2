@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import {PlanCards} from '@/components/plan-cards';
 import {RoiCalculator} from '@/components/roi-calculator';
+import {LandingDemo} from '@/components/landing-demo';
+import {ExampleScenarios} from '@/components/example-scenarios';
 const STEPS=[
   ['Answer every call','Your front-desk agent picks up in seconds, any hour, and finds out what the caller needs.'],
   ['Route to the right specialist','Sales, support, billing and more take over mid-call, so callers never repeat themselves.'],
@@ -16,7 +18,7 @@ export default function Landing(){
       <section className="mx-auto max-w-4xl px-6 py-16 text-center">
         <h1 className="text-4xl font-bold leading-tight md:text-6xl">Every call answered. Every lead followed up.</h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-400">A team of AI voice agents answers your phone around the clock, qualifies leads, books and closes work, and chases unpaid invoices.</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3"><Link href="/signup" className="rounded-lg bg-emerald-600 px-6 py-3 font-medium">Start now</Link><a href="#calculator" className="rounded-lg border border-slate-600 px-6 py-3">See what you could recover</a></div>
+        <div className="mt-8 flex flex-wrap justify-center gap-3"><Link href="/signup" className="rounded-lg bg-emerald-600 px-6 py-3 font-medium">Start now</Link><a href="#demo" className="rounded-lg border border-slate-600 px-6 py-3">Watch it work</a><a href="#calculator" className="rounded-lg border border-slate-600 px-6 py-3">See what you could recover</a></div>
       </section>
       <section className="mx-auto max-w-6xl px-6 py-12">
         <h2 className="mb-6 text-2xl font-semibold">How it works</h2>
@@ -26,6 +28,8 @@ export default function Landing(){
         <h2 className="mb-6 text-2xl font-semibold">A full company, not one chatbot</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{DEPTS.map(([i,n,d])=>(<div key={n} className="rounded-xl border border-slate-700 p-4"><div className="font-medium">{i} {n}</div><p className="text-sm text-slate-400">{d}</p></div>))}</div>
       </section>
+      <section id="demo" className="mx-auto max-w-6xl scroll-mt-6 px-6 py-12"><h2 className="mb-2 text-2xl font-semibold">See it work</h2><p className="mb-6 text-slate-400">A sample business, a sample call. Watch agents hand off and a follow-up get drafted.</p><LandingDemo/></section>
+      <section id="examples" className="mx-auto max-w-6xl scroll-mt-6 px-6 py-12"><h2 className="mb-2 text-2xl font-semibold">Example scenarios</h2><p className="mb-6 text-slate-400">Four moments where an answered call, or a quick follow-up, makes a difference.</p><ExampleScenarios/></section>
       <section id="calculator" className="mx-auto max-w-6xl scroll-mt-6 px-6 py-12">
         <h2 className="mb-6 text-2xl font-semibold">What are missed calls costing you?</h2>
         <RoiCalculator/>

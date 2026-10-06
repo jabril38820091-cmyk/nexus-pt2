@@ -1,6 +1,7 @@
 import {NextRequest,NextResponse} from 'next/server';
 import {supabaseAdmin} from '@/lib/supabase/admin';
 import {fireEvent} from '@/lib/events';
+import {runCallFollowup} from '@/lib/playbooks';
 /**
  * Point your Vapi Server URL at /api/webhooks/vapi and set the secret header.
  * Server messages to enable: status-update, assistant.started, transcript, end-of-call-report.
@@ -30,6 +31,7 @@ export async function POST(req:NextRequest){
    // Optional: if your assistants' analysis plan returns structuredData.revenue_cents, it shows up in the office counter.
    await touch({duration_seconds:m.durationSeconds,outcome:m.analysis?.summary,recording_url:m.recordingUrl??m.artifact?.recordingUrl,transcript:m.artifact?.messages,revenue_cents:m.analysis?.structuredData?.revenue_cents??0,current_agent_id:null});
    await fireEvent(squad.company_id,'call.ended',{call_id:callId,duration_seconds:m.durationSeconds??null,summary:m.analysis?.summary??null});
+   await runCallFollowup(squad.company_id,{callId,summary:m.analysis?.summary??null,caller:m.call?.customer?.number??null,durationSeconds:m.durationSeconds??0});
   }
   return NextResponse.json({ok:true});
  }catch{return NextResponse.json({error:'webhook_failed'},{status:500})}}
