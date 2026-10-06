@@ -58,7 +58,7 @@ export default function HubPage(){
     if(hub.calls.length===0)tips.push(['Run your first call','Open the office and click an agent, or run a demo call.','/office']);
   }
   return(<AppShell>
-    <div className="mb-6 overflow-hidden rounded-3xl border border-emerald-700/40 p-6" style={{background:'radial-gradient(900px 300px at 20% 0%,#064e3b 0%,#0f172a 70%)'}}>
+    <div className="mb-6 overflow-hidden rounded-3xl border border-emerald-700/40 p-6" style={{background:'radial-gradient(900px 300px at 20% 0%,#3d5a2e 0%,#1c1611 70%)'}}>
       <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-sm text-emerald-300/80">{company?.name?`${company.name} · this month`:'This month'}</p>
         <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-300"><input type="checkbox" checked={sample} onChange={e=>setSample(e.target.checked)} className="accent-emerald-500"/>Preview with sample data</label></div>
       {sample&&<p role="status" className="mt-2 rounded bg-amber-500/15 px-3 py-1 text-xs text-amber-300">Sample data. These numbers are examples to show how the page looks. They are not your results.</p>}

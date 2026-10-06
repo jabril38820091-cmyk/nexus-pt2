@@ -9,7 +9,7 @@ const STEPS=[
   ['Watch it work','Your live office shows each agent, each handoff and the revenue captured.']];
 const DEPTS=[['💼','Sales','Qualify leads, answer product questions, close deals'],['🎧','Customer Success','Support, retention and escalation'],['💰','Finance','Billing questions and overdue invoices'],['📣','Marketing','Campaign ideas and content drafts'],['⚙️','Operations','Process, vendors and quality checks'],['👔','Executive','Summaries and performance reviews']];
 export default function Landing(){
-  return(<div className="min-h-screen">
+  return(<div className="min-h-screen" style={{background:'radial-gradient(1000px 480px at 50% 0%,#4a2d17 0%,transparent 70%)'}}>
     <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
       <span className="font-semibold">Nexus Workforce</span>
       <nav className="flex items-center gap-4 text-sm"><a href="#pricing" className="text-slate-400 hover:text-white">Pricing</a><Link href="/login" className="text-slate-400 hover:text-white">Log in</Link><Link href="/signup" className="rounded-lg bg-emerald-600 px-4 py-2 font-medium">Get started</Link></nav>

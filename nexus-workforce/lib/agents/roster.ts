@@ -1,13 +1,13 @@
 export type DepartmentId='lobby'|'sales'|'marketing'|'success'|'operations'|'finance'|'executive';
 export type AgentRoster={id:string;name:string;department:DepartmentId;role:string;deskIndex:number;voiceId:string;avatarColor:string};
 export const DEPARTMENTS:Record<DepartmentId,{label:string;icon:string;color:string;kpi:string}>={
- lobby:{label:'Lobby',icon:'🛎',color:'#8b5cf6',kpi:'Calls today'},
- sales:{label:'Sales',icon:'💼',color:'#10b981',kpi:'Pipeline'},
- marketing:{label:'Marketing',icon:'📣',color:'#f59e0b',kpi:'Campaigns live'},
- success:{label:'Customer Success',icon:'🎧',color:'#3b82f6',kpi:'Open tickets'},
- operations:{label:'Operations',icon:'⚙️',color:'#6366f1',kpi:'SLA %'},
- finance:{label:'Finance',icon:'💰',color:'#14b8a6',kpi:'MRR'},
- executive:{label:'Executive',icon:'👔',color:'#ef4444',kpi:'Revenue'}};
+ lobby:{label:'Lobby',icon:'🛎',color:'#8c5a3c',kpi:'Calls today'},
+ sales:{label:'Sales',icon:'💼',color:'#3f9b5a',kpi:'Pipeline'},
+ marketing:{label:'Marketing',icon:'📣',color:'#e0623d',kpi:'Campaigns live'},
+ success:{label:'Customer Success',icon:'🎧',color:'#2f8fa8',kpi:'Open tickets'},
+ operations:{label:'Operations',icon:'⚙️',color:'#7a6bb8',kpi:'SLA %'},
+ finance:{label:'Finance',icon:'💰',color:'#d4a017',kpi:'MRR'},
+ executive:{label:'Executive',icon:'👔',color:'#b83a4b',kpi:'Revenue'}};
 const A=(id:string,name:string,department:DepartmentId,role:string,deskIndex:number,voiceId:string):AgentRoster=>({id,name,department,role,deskIndex,voiceId,avatarColor:DEPARTMENTS[department].color});
 export const ROSTER:AgentRoster[]=[
  A('router','Router','lobby','Receptionist',0,'Elliot'),
