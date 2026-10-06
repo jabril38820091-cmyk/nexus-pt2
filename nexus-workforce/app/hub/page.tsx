@@ -47,6 +47,7 @@ export default function HubPage(){
     const r=await fetch('/api/hub/approve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,action})});
     setNote(r.ok?(action==='approve'?'Approved. If you have a webhook connected, it was sent on.':'Dismissed.'):'Could not update that.');load();
   }
+  const trackRev=company?.track_revenue!==false;
   const revenue=(hub?.calls??[]).reduce((s,c)=>s+(c.revenue_cents??0),0)/100;
   const callMins=(hub?.calls??[]).reduce((s,c)=>s+(c.duration_seconds??0),0)/3600;
   const hours=callMins+(hub?.done??0)*0.25;
@@ -62,12 +63,12 @@ export default function HubPage(){
       <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-sm text-emerald-300/80">{company?.name?`${company.name} · this month`:'This month'}</p>
         <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-300"><input type="checkbox" checked={sample} onChange={e=>setSample(e.target.checked)} className="accent-emerald-500"/>Preview with sample data</label></div>
       {sample&&<p role="status" className="mt-2 rounded bg-amber-500/15 px-3 py-1 text-xs text-amber-300">Sample data. These numbers are examples to show how the page looks. They are not your results.</p>}
-      <div className="mt-1 text-5xl font-bold text-emerald-400 md:text-6xl">{hub?<CountUp value={revenue} prefix="$"/>:'$0'}</div>
-      <p className="text-slate-300">captured by your agents</p>
+      <div className="mt-1 text-5xl font-bold text-emerald-400 md:text-6xl">{hub?(trackRev?<CountUp value={revenue} prefix="$"/>:<CountUp value={hub.calls.length}/>):'0'}</div>
+      <p className="text-slate-300">{trackRev?'captured by your agents':'calls handled by your agents'}</p>
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         {[['Calls handled',hub?.calls.length??0,0],['Hours saved',hours,1],['Tasks done',hub?.done??0,0]].map(([l,v,d])=>(<div key={l as string} className="rounded-xl bg-black/25 p-3"><div className="text-2xl font-semibold"><CountUp value={v as number} decimals={d as number}/></div><div className="text-xs text-slate-400">{l}</div></div>))}
       </div>
-      <p className="mt-3 text-xs text-slate-500">Hours saved = total call time plus 15 minutes for each completed task. Revenue is what your agents record on calls.</p>
+      <p className="mt-3 text-xs text-slate-500">Hours saved = total call time plus 15 minutes for each completed task.{trackRev?' Revenue is what your agents record on calls.':''}</p>
     </div>
     {note&&<p role="status" className="mb-4 rounded border border-slate-700 bg-slate-900 p-3 text-sm">{note}</p>}
     {hub&&!sample&&<ActivateCard squad={hub.squad} isAdmin={isAdmin} mode={company?.agent_mode??'full'} onDone={load}/>}

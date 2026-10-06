@@ -20,7 +20,7 @@ export default function OfficePage(){
       <span className="text-sm text-slate-500">Demo:</span>
       {DEMO_SCENARIOS.map(s=><button key={s.label} className="rounded border border-slate-600 px-3 py-1 text-sm" onClick={()=>runScenario(s)}>▶ {s.label}</button>)}
     </div>
-    <OfficeView onSelect={setSel} allowed={allowed}/>
+    <OfficeView onSelect={setSel} allowed={allowed} showRevenue={company?.track_revenue!==false}/>
     {sel&&<AgentPanel agent={sel} locked={!allowed.has(sel.id)} onClose={()=>setSel(null)}/>}
   </AppShell>);
 }

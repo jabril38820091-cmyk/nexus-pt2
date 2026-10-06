@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {PlanCards} from '@/components/plan-cards';
 import {RoiCalculator} from '@/components/roi-calculator';
 import {LandingDemo} from '@/components/landing-demo';
+import {GOALS} from '@/lib/goals';
 import {ExampleScenarios} from '@/components/example-scenarios';
 const STEPS=[
   ['Answer every call','Your front-desk agent picks up in seconds, any hour, and finds out what the caller needs.'],
@@ -16,10 +17,12 @@ export default function Landing(){
     </header>
     <main>
       <section className="mx-auto max-w-4xl px-6 py-16 text-center">
-        <h1 className="text-4xl font-bold leading-tight md:text-6xl">Every call answered. Every lead followed up.</h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-400">A team of AI voice agents answers your phone around the clock, qualifies leads, books and closes work, and chases unpaid invoices.</p>
+        <h1 className="text-4xl font-bold leading-tight md:text-6xl">Run your business with an AI team.</h1>
+        <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-400">A team of AI agents that answers your phone, takes messages, handles customer questions, schedules, and keeps things moving. You choose what they do and what they know about your business.</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3"><Link href="/signup" className="rounded-lg bg-emerald-600 px-6 py-3 font-medium">Start now</Link><a href="#demo" className="rounded-lg border border-slate-600 px-6 py-3">Watch it work</a><a href="#calculator" className="rounded-lg border border-slate-600 px-6 py-3">See what you could recover</a></div>
       </section>
+      <section id="jobs" className="mx-auto max-w-6xl px-6 py-12"><h2 className="mb-2 text-2xl font-semibold">You decide what your agents do</h2><p className="mb-6 text-slate-400">Pick the jobs that matter to your business, then teach your agents your prices, policies and rules. Change it any time.</p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{GOALS.map(g=>(<div key={g.id} className="rounded-xl border border-slate-700 p-4"><div className="font-medium">{g.label}</div><p className="text-sm text-slate-400">{g.desc}</p></div>))}</div></section>
       <section className="mx-auto max-w-6xl px-6 py-12">
         <h2 className="mb-6 text-2xl font-semibold">How it works</h2>
         <div className="grid gap-4 md:grid-cols-3">{STEPS.map(([t,d],i)=>(<div key={t} className="rounded-2xl border border-slate-700 bg-slate-900/60 p-6"><div className="mb-2 text-emerald-400">0{i+1}</div><h3 className="font-semibold">{t}</h3><p className="mt-1 text-sm text-slate-400">{d}</p></div>))}</div>

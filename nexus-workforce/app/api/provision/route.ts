@@ -13,7 +13,7 @@ export async function POST(req:NextRequest){
     const {dryRun}=await req.json().catch(()=>({}));
     const admin=!!(await requireAdmin());
     if(dryRun&&!admin)return NextResponse.json({error:'forbidden'},{status:403});
-    const {data:co}=await sb.from('companies').select('id,name,industry,agent_mode,chosen_agent,subscription_status').limit(1).maybeSingle();
+    const {data:co}=await sb.from('companies').select('id,name,industry,website,timezone,business_hours,goals,agent_instructions,agent_mode,chosen_agent,subscription_status').limit(1).maybeSingle();
     if(!co)return NextResponse.json({error:'company_not_found'},{status:404});
     if(!admin&&co.subscription_status!=='active')return NextResponse.json({error:'plan_required',detail:'Choose a plan on the Billing page to activate your agents.'},{status:402});
     const {data:existing}=await supabaseAdmin.from('squads').select('id').eq('company_id',co.id).limit(1).maybeSingle();
@@ -31,7 +31,7 @@ export async function POST(req:NextRequest){
     const assistants:Record<string,Record<string,unknown>>={};
     await Promise.all(tAgents.map(async a=>{assistants[a.vapi_assistant_id]=await vapi('GET',`/assistant/${a.vapi_assistant_id}`)}));
     const template:Template={squad,assistants,agents:tAgents};
-    const plan=buildPlan(template,selected,{name:co.name,industry:co.industry});
+    const plan=buildPlan(template,selected,{name:co.name,industry:co.industry,website:co.website,timezone:co.timezone,hours:co.business_hours,goals:co.goals,instructions:co.agent_instructions});
     if(dryRun)return NextResponse.json({plan:{agents:plan.items.map(i=>i.slug),toolsDropped:plan.toolsDropped,destinationsKept:plan.destinationsKept,squadWillBeCreated:plan.items.length>1}});
     const {created,squadId}=await execute(plan,`${co.name} squad`.slice(0,80));
     const {data:row,error}=await supabaseAdmin.from('squads').insert({company_id:co.id,vapi_squad_id:squadId,status:'active',compiled_json:{provisioned:true,agents:created.map(c=>c.slug)}}).select('id').single();
