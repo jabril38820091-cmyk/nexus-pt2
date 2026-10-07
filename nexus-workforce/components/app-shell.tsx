@@ -4,7 +4,7 @@ import {useEffect} from 'react';
 import {useCompany} from '@/lib/use-company';
 import {usePathname,useRouter} from 'next/navigation';
 import {createClient} from '@/lib/supabase/client';
-const NAV=[['/hub','Money Hub'],['/office','Office'],['/departments','Departments'],['/tasks','Tasks'],['/calls','Calls'],['/emails','Emails'],['/billing','Billing'],['/integrations','Integrations'],['/settings','Settings']];
+const NAV=[['/hub','Home'],['/office','Office'],['/departments','Departments'],['/tasks','Tasks'],['/calls','Calls'],['/emails','Emails'],['/billing','Billing'],['/integrations','Integrations'],['/settings','Settings']];
 export function AppShell({children}:{children:React.ReactNode}){
   const path=usePathname();const router=useRouter();const {company,loading,isAdmin}=useCompany();
   useEffect(()=>{if(!loading&&!company)router.replace('/onboarding')},[loading,company,router]);

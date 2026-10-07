@@ -17,5 +17,20 @@ export async function runCallFollowup(companyId:string,c:{callId:string;summary:
     if(!a?.vapi_assistant_id)return;
     const {text}=await vapiChat(a.vapi_assistant_id,`Write a short, friendly follow-up message (under 80 words) to send to a caller after this call. Use only facts from the summary. Do not invent prices, times or promises.\n\nCall summary: ${c.summary}`);
     await supabaseAdmin.from('tasks').insert({company_id:companyId,agent_slug:a.slug,title:`Follow-up${c.caller?` for ${c.caller}`:''}`,instructions:`${tag}\nCaller: ${c.caller??'unknown'}\nSummary: ${c.summary}`,status:'needs_review',result:text});
+    await notifyOwner(companyId);
   }catch{/* never break the call webhook */}
+}
+
+/** Emails the business owner that a draft is waiting, if they turned that on. Never throws. */
+async function notifyOwner(companyId:string){
+  try{
+    if(!process.env.RESEND_API_KEY)return;
+    const {data:co}=await supabaseAdmin.from('companies').select('owner_id,notify_drafts').eq('id',companyId).maybeSingle();
+    if(!co||co.notify_drafts===false)return;
+    const {data:u}=await supabaseAdmin.auth.admin.getUserById(co.owner_id);
+    const to=u?.user?.email;if(!to)return;
+    const base=(process.env.NEXT_PUBLIC_APP_URL??'').replace(/\/$/,'');
+    await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,'Content-Type':'application/json'},
+      body:JSON.stringify({from:process.env.EMAIL_FROM??'Nexus <onboarding@resend.dev>',to:[to],subject:'A follow-up needs your OK',text:`One of your agents drafted a follow-up and it is waiting for your approval.\n\nReview it: ${base}/hub\n\nYou can turn these emails off in Settings.`})});
+  }catch{/* notification problems must never break the call webhook */}
 }

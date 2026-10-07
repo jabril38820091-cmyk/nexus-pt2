@@ -43,8 +43,8 @@ function Desk({agent,onSelect,allowed,big}:{agent:AgentRoster;onSelect?:(a:Agent
     <div className="text-[10px]" style={{color:SOFT}}>{agent.role}</div>
   </div>);
 }
-export function OfficeView({onSelect,allowed}:{onSelect?:(a:AgentRoster)=>void;allowed?:Set<string>|null}={}){
-  const rev=useStatusStore(s=>s.revenueCents);const statuses=useStatusStore(s=>s.statuses);
+export function OfficeView({onSelect,allowed,showRevenue=true}:{onSelect?:(a:AgentRoster)=>void;allowed?:Set<string>|null;showRevenue?:boolean}={}){
+  const rev=useStatusStore(s=>s.revenueCents);const handled=useStatusStore(s=>s.callsHandled);const statuses=useStatusStore(s=>s.statuses);
   const prev=useRef(rev);const [pops,setPops]=useState<{id:number;amt:number}[]>([]);
   useEffect(()=>{if(rev>prev.current){const id=Date.now(),amt=rev-prev.current;setPops(p=>[...p,{id,amt}]);setTimeout(()=>setPops(p=>p.filter(x=>x.id!==id)),2600)}prev.current=rev},[rev]);
   const rooms=(Object.keys(DEPARTMENTS) as DepartmentId[]).filter(d=>d!=='lobby');
@@ -55,9 +55,9 @@ export function OfficeView({onSelect,allowed}:{onSelect?:(a:AgentRoster)=>void;a
     <div className="relative px-5 pb-4 pt-4" style={{background:'linear-gradient(#f6ead6,#ecdcc0)',borderBottom:'8px solid #a97c4e'}}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div><h1 className="text-xl font-bold" style={{color:INK}}>Your live office</h1><p className="text-sm" style={{color:SOFT}}>{working>0?`${working} agent${working>1?'s':''} on a call right now`:'All quiet. Your team is at their desks.'}</p></div>
-        <div className="relative rounded-2xl border-2 bg-white/80 px-4 py-2 text-right" style={{borderColor:'#c9a56e'}}><div className="text-xs" style={{color:SOFT}}>Revenue captured</div>
-          <div className="text-2xl font-bold text-green-700"><CountUp value={rev/100} prefix="$"/></div>
-          <AnimatePresence>{pops.map(p=>(<motion.div key={p.id} initial={{opacity:1,y:0}} animate={{opacity:0,y:-44}} exit={{opacity:0}} transition={{duration:2.4}} className="pointer-events-none absolute right-3 top-0 text-lg font-bold text-amber-600">+${(p.amt/100).toLocaleString()} 🪙</motion.div>))}</AnimatePresence></div>
+        <div className="relative rounded-2xl border-2 bg-white/80 px-4 py-2 text-right" style={{borderColor:'#c9a56e'}}><div className="text-xs" style={{color:SOFT}}>{showRevenue?'Revenue captured':'Calls handled'}</div>
+          <div className="text-2xl font-bold text-green-700">{showRevenue?<CountUp value={rev/100} prefix="$"/>:<CountUp value={handled}/>}</div>
+          <AnimatePresence>{showRevenue&&pops.map(p=>(<motion.div key={p.id} initial={{opacity:1,y:0}} animate={{opacity:0,y:-44}} exit={{opacity:0}} transition={{duration:2.4}} className="pointer-events-none absolute right-3 top-0 text-lg font-bold text-amber-600">+${(p.amt/100).toLocaleString()} 🪙</motion.div>))}</AnimatePresence></div>
       </div>
       <div className="mt-3 flex items-end justify-around gap-2" aria-hidden="true">{[0,1,2,3,4,5].map(i=>(<div key={i} className="relative hidden h-12 w-20 rounded-t-lg border-4 sm:block" style={{borderColor:'#b48a5a',background:'linear-gradient(#9fd3f0,#e9f5fb)'}}><span className="absolute inset-y-0 left-1/2 w-[3px] -translate-x-1/2" style={{background:'#b48a5a'}}/><span className="absolute inset-x-0 top-1/2 h-[3px]" style={{background:'#b48a5a'}}/></div>))}</div>
     </div>

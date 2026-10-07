@@ -63,3 +63,9 @@ alter table playbooks enable row level security;
 drop policy if exists own_playbooks on playbooks;
 create policy own_playbooks on playbooks for all
   using (company_id in (select id from companies where owner_id = auth.uid()));
+alter table companies add column if not exists timezone text;
+alter table companies add column if not exists business_hours jsonb;
+alter table companies add column if not exists notify_drafts boolean default true;
+alter table companies add column if not exists goals text[] default '{}';
+alter table companies add column if not exists agent_instructions text;
+alter table companies add column if not exists track_revenue boolean default true;

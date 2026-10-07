@@ -1,12 +1,12 @@
 import 'server-only';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {vapi,vapiCreateClean} from './api';
+import {profileBlock,withProfile} from './profile';
 type J=Record<string,any>;
 export type Template={squad:J;assistants:Record<string,J>;agents:{slug:string;vapi_assistant_id:string}[]};
 const STRIP=['id','orgId','createdAt','updatedAt','isServerUrlSecretSet'];
-const clean=(s:string)=>String(s).replace(/[\r\n]+/g,' ').trim().slice(0,80);
 /** Works out what to copy from the template squad. Pure: makes no network calls. */
-export function buildPlan(t:Template,selected:string[],company:{name:string;industry?:string|null}){
+export function buildPlan(t:Template,selected:string[],company:{name:string;industry?:string|null;website?:string|null;timezone?:string|null;hours?:J|null;goals?:string[]|null;instructions?:string|null}){
   const sel=t.agents.filter(a=>selected.includes(a.slug));
   const rest=t.agents.filter(a=>!selected.includes(a.slug));
   const selIds=new Set(sel.map(a=>a.vapi_assistant_id));
@@ -21,7 +21,7 @@ export function buildPlan(t:Template,selected:string[],company:{name:string;indu
     const msgs=body.model?.messages;
     if(Array.isArray(msgs)){
       const sys=msgs.find((m:J)=>m.role==='system');
-      if(sys&&typeof sys.content==='string')sys.content=`You work for ${clean(company.name)}${company.industry?`, a ${clean(company.industry)} business`:''}.\n\n`+sys.content;
+      if(sys&&typeof sys.content==='string')sys.content=withProfile(sys.content,profileBlock({name:company.name,industry:company.industry,website:company.website,timezone:company.timezone,hours:company.hours,goals:company.goals,instructions:company.instructions}));
     }
     if(Array.isArray(body.model?.tools)){
       body.model.tools=body.model.tools.filter((tool:J)=>{
