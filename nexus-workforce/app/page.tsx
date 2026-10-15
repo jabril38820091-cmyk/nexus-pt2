@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import {PlanCards} from '@/components/plan-cards';
+import {PricingSection} from '@/components/pricing-section';
 import {RoiCalculator} from '@/components/roi-calculator';
 import {LandingDemo} from '@/components/landing-demo';
 import {GOALS} from '@/lib/goals';
@@ -38,8 +38,8 @@ export default function Landing(){
         <RoiCalculator/>
       </section>
       <section id="pricing" className="mx-auto max-w-6xl scroll-mt-6 px-6 py-12">
-        <h2 className="mb-2 text-2xl font-semibold">Pricing</h2><p className="mb-6 text-slate-400">Flat monthly price. Cancel any time.</p>
-        <PlanCards/>
+        <h2 className="mb-2 text-2xl font-semibold">Pricing</h2><p className="mb-6 text-slate-400">Flat monthly price, no contracts. Start with just a receptionist, or take the whole team.</p>
+        <PricingSection/>
       </section>
     </main>
     <footer className="mx-auto max-w-6xl px-6 py-10 text-sm text-slate-500">© Nexus Workforce</footer>

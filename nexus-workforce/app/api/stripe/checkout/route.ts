@@ -9,8 +9,9 @@ export async function POST(req:NextRequest){
     const {plan}=await req.json();
     const price=priceFor(plan);
     if(!price)return NextResponse.json({error:'plan_not_configured',detail:'Missing Stripe price ID for this plan.'},{status:400});
-    const {data:company}=await sb.from('companies').select('id,name,stripe_customer_id').limit(1).maybeSingle();
+    const {data:company}=await sb.from('companies').select('id,name,stripe_customer_id,subscription_status').limit(1).maybeSingle();
     if(!company)return NextResponse.json({error:'company_not_found',detail:'Finish onboarding first.'},{status:404});
+    if(company.subscription_status==='active')return NextResponse.json({error:'already_subscribed',detail:'You already have a plan. Use Manage billing to switch plans.'},{status:409});
     const stripe=getStripe();
     let customer=company.stripe_customer_id as string|null;
     if(!customer){

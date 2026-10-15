@@ -7,7 +7,7 @@ import {allowedAgents} from '@/lib/agents/access';
 import {DEPARTMENTS,ROSTER,type AgentRoster,type DepartmentId} from '@/lib/agents/roster';
 export default function Departments(){
   const [sel,setSel]=useState<AgentRoster|null>(null);
-  const {company}=useCompany();const allowed=allowedAgents(company?.agent_mode,company?.chosen_agent);
+  const {company,isAdmin}=useCompany();const allowed=allowedAgents(company?.agent_mode,company?.chosen_agent,isAdmin?null:company?.plan,company?.subscription_status);
   return(<AppShell>
     <h1 className="text-2xl font-semibold">Departments</h1>
     <p className="mb-6 text-sm text-slate-400">Pick a department, then an agent, to chat, call, or assign work.</p>

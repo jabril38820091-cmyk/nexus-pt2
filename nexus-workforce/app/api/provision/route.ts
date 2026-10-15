@@ -5,6 +5,7 @@ import {requireAdmin} from '@/lib/admin';
 import {vapi} from '@/lib/vapi/api';
 import {buildPlan,execute,type Template} from '@/lib/vapi/provision';
 import {ROSTER} from '@/lib/agents/roster';
+import {planAgentIds} from '@/lib/agents/access';
 export const maxDuration=60;
 export async function POST(req:NextRequest){
   try{
@@ -13,7 +14,7 @@ export async function POST(req:NextRequest){
     const {dryRun}=await req.json().catch(()=>({}));
     const admin=!!(await requireAdmin());
     if(dryRun&&!admin)return NextResponse.json({error:'forbidden'},{status:403});
-    const {data:co}=await sb.from('companies').select('id,name,industry,website,timezone,business_hours,goals,agent_instructions,agent_mode,chosen_agent,subscription_status').limit(1).maybeSingle();
+    const {data:co}=await sb.from('companies').select('id,name,industry,website,timezone,business_hours,goals,agent_instructions,agent_mode,chosen_agent,subscription_status,plan').limit(1).maybeSingle();
     if(!co)return NextResponse.json({error:'company_not_found'},{status:404});
     if(!admin&&co.subscription_status!=='active')return NextResponse.json({error:'plan_required',detail:'Choose a plan on the Billing page to activate your agents.'},{status:402});
     const {data:existing}=await supabaseAdmin.from('squads').select('id').eq('company_id',co.id).limit(1).maybeSingle();
@@ -25,7 +26,9 @@ export async function POST(req:NextRequest){
     const {data:agents}=await supabaseAdmin.from('agents').select('slug,vapi_assistant_id').eq('squad_id',tplRow.id);
     const tAgents=(agents??[]).filter(a=>a.vapi_assistant_id);
     const mode=co.agent_mode??'full';
-    const selected=mode==='receptionist'?['router']:mode==='single'&&co.chosen_agent?[co.chosen_agent]:tAgents.map(a=>a.slug);
+    const inPlan=admin?null:planAgentIds(co.plan,co.subscription_status);
+    const wanted=mode==='receptionist'?['router']:mode==='single'&&co.chosen_agent?[co.chosen_agent]:tAgents.map(a=>a.slug);
+    const selected=inPlan?wanted.filter(s=>inPlan.has(s)):wanted;
     if(!tAgents.some(a=>selected.includes(a.slug)))return NextResponse.json({error:'no_template_agent',detail:'The template squad has no agent for your choice.'},{status:500});
     const squad=await vapi('GET',`/squad/${tplId}`);
     const assistants:Record<string,Record<string,unknown>>={};

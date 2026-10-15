@@ -17,8 +17,8 @@ export async function POST(req:NextRequest){
     if(!companyId)return NextResponse.json({error:'unauthorized'},{status:401});
     const {agent,title,instructions}=await req.json();
     if(!agent||!title)return NextResponse.json({error:'missing_fields',detail:'Send agent and title.'},{status:400});
-    const {data:co}=await supabaseAdmin.from('companies').select('agent_mode,chosen_agent').eq('id',companyId).maybeSingle();
-    if(!allowedAgents(co?.agent_mode,co?.chosen_agent).has(agent))return NextResponse.json({error:'agent_not_available'},{status:403});
+    const {data:co}=await supabaseAdmin.from('companies').select('agent_mode,chosen_agent,plan,subscription_status').eq('id',companyId).maybeSingle();
+    if(!allowedAgents(co?.agent_mode,co?.chosen_agent,co?.plan,co?.subscription_status).has(agent))return NextResponse.json({error:'agent_not_available'},{status:403});
     const {data:squads}=await supabaseAdmin.from('squads').select('id').eq('company_id',companyId);
     const {data:a}=await supabaseAdmin.from('agents').select('vapi_assistant_id').in('squad_id',(squads??[]).map(s=>s.id)).eq('slug',agent).limit(1).maybeSingle();
     if(!a?.vapi_assistant_id)return NextResponse.json({error:'agent_not_connected'},{status:404});

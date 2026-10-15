@@ -1,7 +1,7 @@
 import {NextRequest,NextResponse} from 'next/server';
 import type Stripe from 'stripe';
 import {supabaseAdmin} from '@/lib/supabase/admin';
-import {getStripe,mapStatus} from '@/lib/stripe/server';
+import {getStripe,mapStatus,planForPrice} from '@/lib/stripe/server';
 export async function POST(req:NextRequest){
   const raw=await req.text();const sig=req.headers.get('stripe-signature');
   let ev:Stripe.Event;
@@ -13,14 +13,15 @@ export async function POST(req:NextRequest){
     if(ev.type==='checkout.session.completed'){
       const s=ev.data.object as Stripe.Checkout.Session;const id=s.metadata?.company_id;
       if(id&&s.mode==='subscription'){
-        await supabaseAdmin.from('companies').update({stripe_customer_id:s.customer as string,stripe_subscription_id:s.subscription as string,plan:s.metadata?.plan??'starter',subscription_status:'active'}).eq('id',id);
+        await supabaseAdmin.from('companies').update({stripe_customer_id:s.customer as string,stripe_subscription_id:s.subscription as string,plan:s.metadata?.plan??'starter',subscription_status:'active',...(s.metadata?.plan==='receptionist'?{agent_mode:'receptionist',chosen_agent:null}:{})}).eq('id',id);
         await supabaseAdmin.from('squads').update({status:'active'}).eq('company_id',id);
       }
     }
     if(ev.type==='customer.subscription.updated'||ev.type==='customer.subscription.deleted'){
       const sub=ev.data.object as Stripe.Subscription;const id=sub.metadata?.company_id;
       const status=ev.type==='customer.subscription.deleted'?'canceled':mapStatus(sub.status);
-      const patch={subscription_status:status,current_period_end:new Date(sub.current_period_end*1000).toISOString()};
+      const priceId=sub.items?.data?.[0]?.price?.id;const newPlan=priceId?planForPrice(priceId):null;
+      const patch={subscription_status:status,current_period_end:new Date(sub.current_period_end*1000).toISOString(),...(newPlan?{plan:newPlan,...(newPlan==='receptionist'?{agent_mode:'receptionist',chosen_agent:null}:{})}:{})};
       const q=supabaseAdmin.from('companies').update(patch);
       const {data:rows}=await (id?q.eq('id',id):q.eq('stripe_subscription_id',sub.id)).select('id');
       for(const r of rows??[])await supabaseAdmin.from('squads').update({status:status==='active'?'active':'paused'}).eq('company_id',r.id);

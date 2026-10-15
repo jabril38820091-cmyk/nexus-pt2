@@ -10,9 +10,9 @@ import {useCompany} from '@/lib/use-company';
 import {allowedAgents} from '@/lib/agents/access';
 import type {AgentRoster} from '@/lib/agents/roster';
 export default function OfficePage(){
-  const {company}=useCompany();
+  const {company,isAdmin}=useCompany();
   const [sel,setSel]=useState<AgentRoster|null>(null);
-  const allowed=allowedAgents(company?.agent_mode,company?.chosen_agent);
+  const allowed=allowedAgents(company?.agent_mode,company?.chosen_agent,isAdmin?null:company?.plan,company?.subscription_status);
   useCallRealtime(company?.id??null);
   return(<AppShell>
     <p className="mb-3 text-sm text-slate-400">Click an agent to chat, talk by voice, or give them a task. Agents marked 🔒 aren't in your current setup.</p>
