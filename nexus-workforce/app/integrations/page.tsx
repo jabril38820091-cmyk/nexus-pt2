@@ -11,7 +11,7 @@ const CATALOG:[string,string,string][]=[
   ['Zapier','Bridge','Connect thousands of apps using a Zapier webhook'],['Make','Bridge','Connect thousands of apps using a Make webhook'],['n8n','Bridge','Self-hosted or cloud automation, via webhooks'],
   ['Vapi','Built in','Voice agents, chat and phone numbers'],['Email (Resend)','Built in','Agents send follow-up emails'],['Stripe','Built in','Billing and subscriptions'],
   ['Google Calendar','Via a bridge','Book appointments from a call.ended or task event'],['Slack','Via a bridge','Post call summaries to a channel'],['Google Sheets','Via a bridge','Log every call or task'],
-  ['HubSpot / Salesforce','Via a bridge','Create leads from calls'],['SMS (Twilio)','Planned','Text callers directly'],['Native calendar booking','Planned','Agents book without a bridge']];
+  ['HubSpot / Salesforce','Via a bridge','Create leads from calls'],['SMS (Twilio)','Built in','Agents and approved follow-ups can text callers, using your own Twilio account'],['Native calendar booking','Planned','Agents book without a bridge']];
 const tone:Record<string,string>={Custom:'bg-purple-900 text-purple-300','Built in':'bg-emerald-900 text-emerald-300',Bridge:'bg-blue-900 text-blue-300','Via a bridge':'bg-slate-700 text-slate-300',Planned:'bg-amber-900 text-amber-300'};
 const box='mt-1 w-full rounded border border-slate-600 bg-slate-950 p-2 text-sm';
 const card='rounded-xl border border-slate-700 bg-slate-900/60 p-4';

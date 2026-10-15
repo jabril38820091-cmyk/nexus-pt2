@@ -8,7 +8,7 @@ const card='rounded-xl border border-slate-700 bg-slate-900/60 p-4';
 const btn='rounded border border-slate-600 px-3 py-1.5 text-sm hover:bg-slate-800 disabled:opacity-50';
 export default function Admin(){
   const {isAdmin,loading}=useCompany();
-  const [over,setOver]=useState<Over|null>(null);const [msg,setMsg]=useState('');const [busy,setBusy]=useState(false);
+  const [over,setOver]=useState<Over|null>(null);const [key,setKey]=useState('');const [msg,setMsg]=useState('');const [busy,setBusy]=useState(false);
   const load=useCallback(async()=>{const r=await fetch('/api/admin/overview');if(r.ok)setOver(await r.json())},[]);
   useEffect(()=>{if(isAdmin)load()},[isAdmin,load]);
   async function call(url:string,body:object,ok:string){
@@ -39,6 +39,10 @@ export default function Admin(){
         <p className="mt-3 text-xs text-slate-500">When you finish testing, set Active and Full team again.</p>
       </section>
     </div>
+    <section className={card+' mt-6'}><h2 className="mb-1 font-medium">Encryption key</h2>
+      <p className="mb-3 text-sm text-slate-400">Texting stores each business's Twilio password encrypted. Make a key here, copy it, and add it in Vercel as <code>APP_ENCRYPTION_KEY</code> (Secret). Do it once and keep it. If you change it later, saved texting passwords stop working.</p>
+      <button onClick={()=>{const a=new Uint8Array(32);crypto.getRandomValues(a);setKey(btoa(String.fromCharCode(...a)))}} className={btn}>Make a key</button>
+      {key&&<code className="mt-3 block break-all rounded bg-slate-950 p-3 text-sm">{key}</code>}</section>
     <section className={card+' mt-6'}><h2 className="mb-3 font-medium">Overview</h2>
       {!over?<p className="text-sm text-slate-500">Loading…</p>:<>
         <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-5">{Object.entries(over.counts).map(([k,v])=>(<div key={k} className="rounded border border-slate-700 p-3"><div className="text-2xl font-bold">{v}</div><div className="text-xs text-slate-400">{k}</div></div>))}</div>

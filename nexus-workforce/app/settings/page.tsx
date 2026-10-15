@@ -7,12 +7,13 @@ import {ConnectSquad} from '@/components/connect-squad';
 import {BusinessProfile,type Profile} from '@/components/settings/business-profile';
 import {Notifications} from '@/components/settings/notifications';
 import {AgentJobs} from '@/components/settings/agent-jobs';
+import {Texting} from '@/components/settings/texting';
 import {AccountSecurity} from '@/components/settings/account-security';
 import {DataPrivacy} from '@/components/settings/data-privacy';
 import {useCompany} from '@/lib/use-company';
 import {createClient} from '@/lib/supabase/client';
 type Full=Profile&{agent_mode:string|null;chosen_agent:string|null;plan:string|null;subscription_status:string|null;notify_drafts:boolean|null;goals:string[]|null;agent_instructions:string|null;track_revenue:boolean|null};
-const SECTIONS:[string,string][]=[['profile','Business profile'],['jobs','What your agents do'],['notifications','Notifications'],['agents','Your agents'],['plan','Plan and billing'],['account','Account and security'],['data','Data and privacy'],['advanced','Advanced']];
+const SECTIONS:[string,string][]=[['profile','Business profile'],['jobs','What your agents do'],['texting','Texting'],['notifications','Notifications'],['agents','Your agents'],['plan','Plan and billing'],['account','Account and security'],['data','Data and privacy'],['advanced','Advanced']];
 const card='scroll-mt-6 rounded-xl border border-slate-700 bg-slate-900/60 p-5';
 export default function Settings(){
   const {company,isAdmin}=useCompany();
@@ -46,9 +47,10 @@ export default function Settings(){
       <div className="max-w-3xl space-y-6">
         <section id="profile" className={card}><h2 className="mb-3 font-medium">Business profile</h2>{full?<BusinessProfile company={full}/>:<p className="text-sm text-slate-500">Loading…</p>}</section>
         <section id="jobs" className={card}><h2 className="mb-3 font-medium">What your agents do</h2>{full?<AgentJobs company={full}/>:<p className="text-sm text-slate-500">Loading…</p>}</section>
+        <section id="texting" className={card}><h2 className="mb-3 font-medium">Texting</h2><Texting/></section>
         <section id="notifications" className={card}><h2 className="mb-3 font-medium">Notifications</h2>{full?<Notifications companyId={full.id} initial={full.notify_drafts!==false}/>:<p className="text-sm text-slate-500">Loading…</p>}</section>
         <section id="agents" className={card}><h2 className="mb-3 font-medium">Your agents</h2>
-          <AgentChoice value={choice} onChange={setChoice}/>
+          <AgentChoice value={choice} onChange={setChoice} plan={isAdmin?null:full?.subscription_status==='active'?full.plan:null}/>
           <button onClick={saveAgents} className="mt-3 rounded bg-emerald-600 px-4 py-2 text-sm font-medium">Save</button>
           {saved&&<p className="mt-2 text-sm text-slate-300">{saved}</p>}</section>
         <section id="plan" className={card}><h2 className="mb-3 font-medium">Plan and billing</h2>
