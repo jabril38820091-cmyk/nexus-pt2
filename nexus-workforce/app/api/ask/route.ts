@@ -27,7 +27,7 @@ export async function POST(req:NextRequest){
     if(!pick)return NextResponse.json({error:'no_agent',detail:'You have no active agents yet. Activate your agents on the Home page first.'},{status:404});
     const start=startOfDay(co.timezone).toISOString();const weekAgo=new Date(Date.now()-7*86400_000).toISOString();
     const [calls,week,tasks,emails,texts,drafts]=await Promise.all([
-      sb.from('calls').select('caller_number,duration_seconds,outcome,revenue_cents,created_at').gte('created_at',start).order('created_at',{ascending:false}).limit(200),
+      sb.from('calls').select('caller_number,duration_seconds,outcome,revenue_cents,created_at,transcript_text').gte('created_at',start).order('created_at',{ascending:false}).limit(200),
       sb.from('calls').select('duration_seconds,revenue_cents').gte('created_at',weekAgo).limit(2000),
       sb.from('tasks').select('title,status,created_at').gte('created_at',start).not('instructions','like','[ask]%').order('created_at',{ascending:false}).limit(30),
       sb.from('email_log').select('subject,created_at').eq('status','sent').gte('created_at',start).limit(50),

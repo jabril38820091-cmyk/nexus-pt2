@@ -87,3 +87,6 @@ drop policy if exists read_own_sms_settings on sms_settings;
 create policy read_own_sms_settings on sms_settings for select using (company_id in (select id from companies where owner_id = auth.uid()));
 drop policy if exists read_own_sms_log on sms_log;
 create policy read_own_sms_log on sms_log for select using (company_id in (select id from companies where owner_id = auth.uid()));
+alter table calls add column if not exists transcript_text text;
+alter table companies add column if not exists save_transcripts boolean default true;
+alter table companies add column if not exists transcript_retention_days int default 90;

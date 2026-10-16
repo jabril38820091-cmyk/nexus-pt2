@@ -1,5 +1,6 @@
 import {goalLabels} from '@/lib/goals';
-export type CallRow={caller_number:string|null;duration_seconds:number|null;outcome:string|null;revenue_cents:number|null;created_at:string};
+import {maskSensitive} from '@/lib/transcript';
+export type CallRow={transcript_text?:string|null;caller_number:string|null;duration_seconds:number|null;outcome:string|null;revenue_cents:number|null;created_at:string};
 export type TaskRow={title:string;status:string;created_at:string};
 export type LogRow={subject?:string|null;created_at:string};
 const clip=(s:string|null|undefined,n:number)=>String(s??'').replace(/\s+/g,' ').trim().slice(0,n);
@@ -33,7 +34,8 @@ export function buildContext(c:Ctx):string{
   const calls=c.today.calls;const mins=calls.reduce((s,x)=>s+(x.duration_seconds??0),0)/60;
   L.push(`\nTODAY, calls: ${calls.length}, total talk time ${mins.toFixed(1)} minutes${c.company.trackRevenue?`, revenue recorded $${(calls.reduce((s,x)=>s+(x.revenue_cents??0),0)/100).toLocaleString()}`:''}.`);
   if(!calls.length)L.push('No calls today.');
-  calls.slice(0,40).forEach(x=>L.push(`- ${localTime(x.created_at,tz)}, caller ${mask(x.caller_number)}, ${Math.round(x.duration_seconds??0)}s, outcome: ${clip(x.outcome,140)||'not recorded'}${c.company.trackRevenue&&x.revenue_cents?`, $${(x.revenue_cents/100).toLocaleString()}`:''}`));
+  calls.slice(0,40).forEach((x,i)=>{L.push(`- ${localTime(x.created_at,tz)}, caller ${mask(x.caller_number)}, ${Math.round(x.duration_seconds??0)}s, outcome: ${clip(x.outcome,140)||'not recorded'}${c.company.trackRevenue&&x.revenue_cents?`, $${(x.revenue_cents/100).toLocaleString()}`:''}`);
+    if(i<10&&x.transcript_text)L.push(`  What was said (excerpt): ${maskSensitive(clip(x.transcript_text,500))}`)});
   if(calls.length>40)L.push(`(${calls.length-40} more calls not listed)`);
   L.push(`\nLAST 7 DAYS: ${c.week.calls} calls, ${c.week.minutes.toFixed(1)} minutes${c.company.trackRevenue?`, revenue recorded $${(c.week.revenueCents/100).toLocaleString()}`:''}.`);
   L.push(`\nFOLLOW-UP DRAFTS WAITING FOR APPROVAL: ${c.drafts.length}${c.drafts.length?`. ${c.drafts.slice(0,10).map(d=>clip(d,80)).join('; ')}`:''}`);

@@ -8,7 +8,7 @@ export function DataPrivacy({isAdmin}:{isAdmin:boolean}){
     setMsg('Preparing your export…');const sb=createClient();
     const [co,calls,tasks,emails,pb,hooks,conns]=await Promise.all([
       sb.from('companies').select('name,industry,website,timezone,business_hours,plan,subscription_status,agent_mode,chosen_agent,created_at').limit(1).maybeSingle(),
-      sb.from('calls').select('caller_number,duration_seconds,outcome,revenue_cents,created_at'),
+      sb.from('calls').select('caller_number,duration_seconds,outcome,revenue_cents,created_at,transcript_text'),
       sb.from('tasks').select('agent_slug,title,instructions,status,result,created_at'),
       sb.from('email_log').select('to_email,subject,body,status,created_at'),
       sb.from('playbooks').select('key,enabled'),

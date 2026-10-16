@@ -2,6 +2,8 @@ import {NextRequest,NextResponse} from 'next/server';
 import {supabaseAdmin} from '@/lib/supabase/admin';
 import {fireEvent} from '@/lib/events';
 import {runCallFollowup} from '@/lib/playbooks';
+import {transcriptFromArtifact} from '@/lib/transcript';
+import {purgeOldTranscripts} from '@/lib/retention';
 /**
  * Point your Vapi Server URL at /api/webhooks/vapi and set the secret header.
  * Server messages to enable: status-update, assistant.started, transcript, end-of-call-report.
@@ -29,7 +31,11 @@ export async function POST(req:NextRequest){
   if(m.type==='transcript'&&m.transcriptType==='final')await touch({last_snippet:String(m.transcript??'').slice(-120)});
   if(m.type==='end-of-call-report'){
    // Optional: if your assistants' analysis plan returns structuredData.revenue_cents, it shows up in the office counter.
-   await touch({duration_seconds:m.durationSeconds,outcome:m.analysis?.summary,recording_url:m.recordingUrl??m.artifact?.recordingUrl,transcript:m.artifact?.messages,revenue_cents:m.analysis?.structuredData?.revenue_cents??0,current_agent_id:null});
+   const {data:prefs}=await supabaseAdmin.from('companies').select('save_transcripts,transcript_retention_days').eq('id',squad.company_id).maybeSingle();
+   const keep=prefs?.save_transcripts!==false;
+   const tx=keep?transcriptFromArtifact(m.artifact):'';
+   await touch({duration_seconds:m.durationSeconds,outcome:m.analysis?.summary,recording_url:keep?(m.recordingUrl??m.artifact?.recordingUrl??null):null,transcript:null,transcript_text:tx||null,revenue_cents:m.analysis?.structuredData?.revenue_cents??0,current_agent_id:null});
+   if(keep)await purgeOldTranscripts(squad.company_id,prefs?.transcript_retention_days);
    await fireEvent(squad.company_id,'call.ended',{call_id:callId,duration_seconds:m.durationSeconds??null,summary:m.analysis?.summary??null});
    await runCallFollowup(squad.company_id,{callId,summary:m.analysis?.summary??null,caller:m.call?.customer?.number??null,durationSeconds:m.durationSeconds??0});
   }

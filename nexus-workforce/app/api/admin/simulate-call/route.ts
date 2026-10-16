@@ -17,7 +17,7 @@ export async function POST(){
     await sleep(2500);await touch({current_agent_id:agent,last_snippet:line});
   }
   await sleep(2500);
-  await touch({current_agent_id:null,duration_seconds:45,outcome:'Simulated call',revenue_cents:50000});
+  await touch({current_agent_id:null,duration_seconds:45,outcome:'Simulated call',revenue_cents:50000,transcript_text:'Agent: Thanks for calling, how can I help?\nCaller: Hi, I would like to know your opening hours.\nAgent: We open at nine. Can I take your name for a follow-up?\nCaller: Sure, it is Sam.\nAgent: Thanks Sam, someone will be in touch.'});
   await runCallFollowup(co.id,{callId,summary:'The caller asked about getting started and agreed to a follow-up message.',caller:'+1 (555) 010-0100',durationSeconds:45});
   return NextResponse.json({ok:true});
 }
