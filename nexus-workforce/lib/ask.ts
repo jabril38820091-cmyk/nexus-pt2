@@ -1,26 +1,12 @@
 import {goalLabels} from '@/lib/goals';
 import {maskSensitive} from '@/lib/transcript';
+import {startOfDay} from '@/lib/tz';
+export {startOfDay};
 export type CallRow={transcript_text?:string|null;caller_number:string|null;duration_seconds:number|null;outcome:string|null;revenue_cents:number|null;created_at:string};
 export type TaskRow={title:string;status:string;created_at:string};
 export type LogRow={subject?:string|null;created_at:string};
 const clip=(s:string|null|undefined,n:number)=>String(s??'').replace(/\s+/g,' ').trim().slice(0,n);
 const mask=(n:string|null)=>{const d=String(n??'').replace(/\D/g,'');return d.length>=4?`ending ${d.slice(-4)}`:'unknown caller'};
-/** Offset in minutes of a time zone from UTC at a given instant. */
-function tzOffsetMin(tz:string,at:Date):number{
-  const p=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(at);
-  const g=(t:string)=>Number(p.find(x=>x.type===t)!.value);
-  return Math.round((Date.UTC(g('year'),g('month')-1,g('day'),g('hour'),g('minute'),g('second'))-at.getTime())/60000);
-}
-/** The instant when today began in the given time zone. Falls back to UTC if the zone is unknown. */
-export function startOfDay(tz:string|null|undefined,now=new Date()):Date{
-  let zone=tz||'UTC';
-  try{new Intl.DateTimeFormat('en-US',{timeZone:zone})}catch{zone='UTC'}
-  const day=new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
-  const [y,m,d]=day.split('-').map(Number);
-  let guess=new Date(Date.UTC(y,m-1,d));
-  for(let i=0;i<2;i++)guess=new Date(Date.UTC(y,m-1,d)-tzOffsetMin(zone,guess)*60000);
-  return guess;
-}
 const localTime=(iso:string,tz:string)=>{try{return new Intl.DateTimeFormat('en-US',{timeZone:tz,hour:'numeric',minute:'2-digit'}).format(new Date(iso))}catch{return iso.slice(11,16)}};
 export type Ctx={company:{name:string;industry?:string|null;timezone?:string|null;goals?:string[]|null;instructions?:string|null;trackRevenue:boolean};now:Date;today:{calls:CallRow[];tasks:TaskRow[];emails:LogRow[];texts:LogRow[]};week:{calls:number;minutes:number;revenueCents:number};drafts:string[]};
 /** Plain-text facts about the business for the agent to work from. Phone numbers are masked. */

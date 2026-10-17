@@ -3,7 +3,7 @@ export const GOALS:{id:string;label:string;desc:string}[]=[
   {id:'take_messages',label:'Take messages',desc:'Record who called, what they need, and how to reach them.'},
   {id:'faq',label:'Answer common questions',desc:'Hours, location, prices, policies, and how things work.'},
   {id:'support',label:'Help existing customers',desc:'Handle problems, requests, and account questions.'},
-  {id:'scheduling',label:'Scheduling and reminders',desc:'Take appointment requests and reminders. Booking into a calendar needs a connected calendar.'},
+  {id:'scheduling',label:'Scheduling and reminders',desc:'Take appointment requests and book them into your Google Calendar (connect it in Settings, under Booking).'},
   {id:'billing',label:'Billing questions and reminders',desc:'Answer billing questions and remind customers about unpaid invoices.'},
   {id:'followups',label:'Follow up after calls',desc:'Draft follow-ups for your approval.'},
   {id:'new_customers',label:'Welcome new customers',desc:'Collect details from people who want to become customers.'},
