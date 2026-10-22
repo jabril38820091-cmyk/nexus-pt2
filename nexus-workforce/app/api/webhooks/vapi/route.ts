@@ -4,6 +4,7 @@ import {fireEvent} from '@/lib/events';
 import {runCallFollowup} from '@/lib/playbooks';
 import {transcriptFromArtifact} from '@/lib/transcript';
 import {purgeOldTranscripts} from '@/lib/retention';
+import {checkUsageAlerts} from '@/lib/usage-server';
 /**
  * Point your Vapi Server URL at /api/webhooks/vapi and set the secret header.
  * Server messages to enable: status-update, assistant.started, transcript, end-of-call-report.
@@ -38,6 +39,7 @@ export async function POST(req:NextRequest){
    if(keep)await purgeOldTranscripts(squad.company_id,prefs?.transcript_retention_days);
    await fireEvent(squad.company_id,'call.ended',{call_id:callId,duration_seconds:m.durationSeconds??null,summary:m.analysis?.summary??null});
    await runCallFollowup(squad.company_id,{callId,summary:m.analysis?.summary??null,caller:m.call?.customer?.number??null,durationSeconds:m.durationSeconds??0});
+   await checkUsageAlerts(squad.company_id);
   }
   return NextResponse.json({ok:true});
  }catch{return NextResponse.json({error:'webhook_failed'},{status:500})}}

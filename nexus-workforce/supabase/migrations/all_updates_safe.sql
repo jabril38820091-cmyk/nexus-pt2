@@ -114,3 +114,7 @@ drop policy if exists read_own_booking_settings on booking_settings;
 create policy read_own_booking_settings on booking_settings for select using (company_id in (select id from companies where owner_id = auth.uid()));
 drop policy if exists read_own_bookings on bookings;
 create policy read_own_bookings on bookings for select using (company_id in (select id from companies where owner_id = auth.uid()));
+alter table companies add column if not exists current_period_start timestamptz;
+alter table companies add column if not exists usage_alert_level int default 0;
+alter table companies add column if not exists usage_alert_period timestamptz;
+create index if not exists calls_company_created on calls(company_id,created_at);

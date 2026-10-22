@@ -23,7 +23,8 @@ export async function POST(req:NextRequest){
       const priceId=sub.items?.data?.[0]?.price?.id;const newPlan=priceId?planForPrice(priceId):null;
       // Newer Stripe API versions moved the period end onto the subscription item, so look in both places.
       const pe=(sub as unknown as {current_period_end?:number}).current_period_end??(sub.items?.data?.[0] as unknown as {current_period_end?:number}|undefined)?.current_period_end;
-      const patch={subscription_status:status,...(pe?{current_period_end:new Date(pe*1000).toISOString()}:{}),...(newPlan?{plan:newPlan,...(newPlan==='receptionist'?{agent_mode:'receptionist',chosen_agent:null}:{})}:{})};
+      const ps=(sub as unknown as {current_period_start?:number}).current_period_start??(sub.items?.data?.[0] as unknown as {current_period_start?:number}|undefined)?.current_period_start;
+      const patch={subscription_status:status,...(pe?{current_period_end:new Date(pe*1000).toISOString()}:{}),...(ps?{current_period_start:new Date(ps*1000).toISOString()}:{}),...(newPlan?{plan:newPlan,...(newPlan==='receptionist'?{agent_mode:'receptionist',chosen_agent:null}:{})}:{})};
       const q=supabaseAdmin.from('companies').update(patch);
       const {data:rows}=await (id?q.eq('id',id):q.eq('stripe_subscription_id',sub.id)).select('id');
       for(const r of rows??[])await supabaseAdmin.from('squads').update({status:status==='active'?'active':'paused'}).eq('company_id',r.id);

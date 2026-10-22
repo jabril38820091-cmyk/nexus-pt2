@@ -3,6 +3,7 @@ import {Suspense,useEffect,useState} from 'react';
 import {useSearchParams} from 'next/navigation';
 import {AppShell} from '@/components/app-shell';
 import {PlanCards} from '@/components/plan-cards';
+import {UsageBar} from '@/components/usage-bar';
 import {createClient} from '@/lib/supabase/client';
 type Co={plan:string|null;subscription_status:string|null;current_period_end:string|null;stripe_customer_id:string|null};
 function Inner(){
@@ -26,6 +27,7 @@ function Inner(){
       {co.stripe_customer_id&&<button onClick={portal} className="mt-3 w-full rounded border border-slate-600 py-2">Manage billing or cancel</button>}
       {err&&<p role="alert" className="mt-2 text-amber-400">{err}</p>}
     </div>}
+    {co&&<UsageBar/>}
     {co&&<PlanCards current={active?co.plan:null}/>}
   </>);
 }

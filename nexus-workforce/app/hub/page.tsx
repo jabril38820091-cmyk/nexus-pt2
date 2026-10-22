@@ -5,6 +5,7 @@ import {AppShell} from '@/components/app-shell';
 import {callerFromNotes} from '@/lib/phone';
 import {ActivateCard} from '@/components/activate-card';
 import {AskTeam} from '@/components/ask-team';
+import {UsageBar} from '@/components/usage-bar';
 import {CountUp} from '@/components/count-up';
 import {useCompany} from '@/lib/use-company';
 import {createClient} from '@/lib/supabase/client';
@@ -75,6 +76,7 @@ export default function HubPage(){
       <p className="mt-3 text-xs text-slate-500">Hours saved = total call time plus 15 minutes for each completed task.{trackRev?' Revenue is what your agents record on calls.':''}</p>
     </div>
     {note&&<p role="status" className="mb-4 rounded border border-slate-700 bg-slate-900 p-3 text-sm">{note}</p>}
+    {!sample&&<UsageBar showLink/>}
     {!sample&&<AskTeam/>}
     {hub&&!sample&&<ActivateCard squad={hub.squad} isAdmin={isAdmin} mode={company?.agent_mode??'full'} onDone={load}/>}
     <div className="grid gap-6 lg:grid-cols-2">
