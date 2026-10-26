@@ -1,4 +1,5 @@
 'use client';
+import {AdminDemoRequests} from '@/components/admin-demo-requests';
 import {useCallback,useEffect,useState} from 'react';
 import {AppShell} from '@/components/app-shell';
 import {useCompany} from '@/lib/use-company';
@@ -49,5 +50,6 @@ export default function Admin(){
         <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="text-slate-400"><tr><th className="p-2">Business</th><th className="p-2">Type</th><th className="p-2">Agents</th><th className="p-2">Status</th><th className="p-2">Plan</th><th className="p-2">Minutes this period</th><th className="p-2">Joined</th></tr></thead>
           <tbody>{over.companies.map(c=>(<tr key={c.id} className="border-t border-slate-800"><td className="p-2">{c.name}</td><td className="p-2">{c.industry}</td><td className="p-2">{c.agent_mode??'full'}</td><td className="p-2">{c.subscription_status??'inactive'}</td><td className="p-2">{c.plan??'-'}</td><td className={`p-2 ${c.used!=null&&c.limit?(c.used>=c.limit?'text-red-300':c.used>=c.limit*0.8?'text-amber-300':''):''}`}>{c.used==null?'-':c.limit?`${c.used.toLocaleString()} / ${c.limit.toLocaleString()}`:c.used.toLocaleString()}</td><td className="p-2">{new Date(c.created_at).toLocaleDateString()}</td></tr>))}</tbody></table></div></>}
     </section>
+    <section className={card+' mt-6'}><h2 className="mb-3 font-medium">Demo requests</h2><AdminDemoRequests/></section>
   </AppShell>);
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import {DemoForm} from '@/components/demo-form';
 import {PricingSection} from '@/components/pricing-section';
 import {RoiCalculator} from '@/components/roi-calculator';
 import {LandingDemo} from '@/components/landing-demo';
@@ -13,7 +14,7 @@ export default function Landing(){
   return(<div className="min-h-screen" style={{background:'radial-gradient(1000px 480px at 50% 0%,#4a2d17 0%,transparent 70%)'}}>
     <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
       <span className="font-semibold">Nexus Workforce</span>
-      <nav className="flex items-center gap-4 text-sm"><a href="#pricing" className="text-slate-400 hover:text-white">Pricing</a><Link href="/login" className="text-slate-400 hover:text-white">Log in</Link><Link href="/signup" className="rounded-lg bg-emerald-600 px-4 py-2 font-medium">Get started</Link></nav>
+      <nav className="flex items-center gap-4 text-sm"><a href="#pricing" className="text-slate-400 hover:text-white">Pricing</a><a href="#request-demo" className="rounded-lg border border-emerald-600 px-3 py-1.5 text-emerald-400 hover:bg-emerald-600 hover:text-white">Request a demo</a><Link href="/login" className="text-slate-400 hover:text-white">Log in</Link><Link href="/signup" className="rounded-lg bg-emerald-600 px-4 py-2 font-medium">Get started</Link></nav>
     </header>
     <main>
       <section className="mx-auto max-w-4xl px-6 py-16 text-center">
@@ -37,11 +38,12 @@ export default function Landing(){
         <h2 className="mb-6 text-2xl font-semibold">What are missed calls costing you?</h2>
         <RoiCalculator/>
       </section>
+      <section id="request-demo" className="mx-auto max-w-3xl scroll-mt-6 px-6 py-12"><h2 className="mb-2 text-2xl font-semibold">See it on your business</h2><p className="mb-6 text-slate-400">Tell us about your business and we'll show you how your agents would answer your calls. About 15 minutes, no commitment.</p><DemoForm/></section>
       <section id="pricing" className="mx-auto max-w-6xl scroll-mt-6 px-6 py-12">
         <h2 className="mb-2 text-2xl font-semibold">Pricing</h2><p className="mb-6 text-slate-400">Flat monthly price, no contracts. Start with just a receptionist, or take the whole team.</p>
         <PricingSection/>
       </section>
     </main>
-    <footer className="mx-auto max-w-6xl px-6 py-10 text-sm text-slate-500">© Nexus Workforce</footer>
+    <footer className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-10 text-sm text-slate-500"><span>© Nexus Workforce</span><nav aria-label="Legal" className="flex gap-4"><Link href="/terms" className="underline">Terms</Link><Link href="/privacy" className="underline">Privacy</Link></nav></footer>
   </div>);
 }
